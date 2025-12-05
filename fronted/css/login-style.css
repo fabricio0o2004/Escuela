@@ -1,0 +1,217 @@
+/* frontend/css/login-style.css */
+@import url("https://fonts.googleapis.com/css2?family=Fredericka+the+Great&display=swap");
+
+/* --- 1. CONTENEDOR PRINCIPAL DEL LOGIN --- */
+/* En lugar de aplicar al body, aplicamos al ID #login-screen */
+#login-screen {
+    position: fixed; /* Cubre toda la pantalla */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999; /* Asegura que esté siempre encima */
+    
+    /* Estilos de tu diseño original */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+    font-weight: bold;
+    
+    /* Imagen de fondo (Recuerda poner tu imagen en la carpeta img) */
+    background: url("../img/fondoescolar.png") no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* --- 2. TARJETA DEL FORMULARIO --- */
+.login-container {
+    background-color: #fff;
+    width: 500px;
+    max-width: 90%;
+    /* border-radius: 50%;  <-- El diseño original usaba círculo, pero para formularios largos es mejor rectangulo redondeado */
+    border-radius: 40px; 
+    border: 6px solid #eaf4fb;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    padding: 40px;
+    text-align: center;
+}
+
+/* --- 3. LOGO Y TEXTOS --- */
+.header-text-logo {
+    width: 180px;
+    margin-bottom: 10px;
+}
+
+.header-text-description {
+    color: #242d34;
+    font-size: 2rem;
+    font-weight: 400;
+    margin: 10px 0 30px 0;
+    font-family: 'Fredericka the Great', cursive;
+}
+
+/* --- 4. INPUTS Y BOTONES --- */
+#login-screen input {
+    width: 100%;
+    height: 50px;
+    padding: 15px;
+    border-radius: 25px; /* Bordes redondos */
+    border: 2px solid #E6E6F0;
+    background-color: #FAFAFC;
+    margin-bottom: 15px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+#login-screen input:focus {
+    border-color: #f14e54;
+    box-shadow: 0 0 8px rgba(241, 78, 84, 0.2);
+}
+
+#login-screen button {
+    width: 100%;
+    margin-top: 10px;
+    height: 50px;
+    background: #f14e54;
+    border: 0;
+    border-radius: 25px;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: transform 0.2s;
+}
+
+#login-screen button:hover {
+    background: #d63c42;
+    transform: scale(1.02);
+}
+
+#login-error {
+    min-height: 20px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* --- TEMAS POR ROL (Personalización) --- */
+
+/* 1. TEMA ADMIN (Serio, Azul/Gris, Datos) */
+.hero-admin {
+    background: linear-gradient(to right, #2c3e50, #4ca1af);
+    color: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(44, 62, 80, 0.3);
+}
+
+/* 2. TEMA DOCENTE (Calmado, Verde/Teal, Agenda) */
+.hero-docente {
+    background: linear-gradient(to right, #11998e, #38ef7d);
+    color: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+}
+
+/* 3. TEMA PADRE (Amigable, Naranja/Cálido, Familia) */
+.hero-padre {
+    background: linear-gradient(to right, #ff9966, #ff5e62);
+    color: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(255, 94, 98, 0.3);
+}
+
+/* 4. TEMA SECRETARÍA (Eficiente, Violeta, Procesos) */
+.hero-secre {
+    background: linear-gradient(to right, #8e2de2, #4a00e0);
+    color: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(74, 0, 224, 0.3);
+}
+
+/* --- 6. ESTILOS DEL SIDEBAR (NUEVO DISEÑO) --- */
+
+/* Ocultamos el scroll del body general para que sea la app la que scrollee */
+body {
+    overflow-x: hidden;
+}
+
+/* Barra Lateral Izquierda */
+.sidebar-container {
+    height: 100vh;
+    width: 280px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
+    color: white;
+    transition: all 0.3s;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+}
+
+/* Área de Contenido Principal (Derecha) */
+.main-content-wrapper {
+    margin-left: 280px; /* Mismo ancho que el sidebar */
+    padding: 30px;
+    min-height: 100vh;
+    background-color: #f4f6f9;
+}
+
+/* Enlaces del Menú Lateral */
+.nav-link-custom {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 15px 20px;
+    margin: 5px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+    font-size: 16px;
+}
+
+.nav-link-custom:hover, .nav-link-custom.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transform: translateX(5px);
+}
+
+.nav-link-custom i {
+    font-size: 1.2rem;
+    margin-right: 15px;
+    width: 25px;
+    text-align: center;
+}
+
+/* Banner superior en el contenido */
+.top-banner {
+    border-radius: 15px;
+    padding: 30px;
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Animación de entrada suave */
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

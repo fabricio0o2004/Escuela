@@ -1,0 +1,13 @@
+# Ignorar archivos de entorno (Tus claves secretas)
+.env
+*/.env
+*.env
+
+# Ignorar carpetas gigantes de librerías (Node.js)
+node_modules/
+*/node_modules/
+
+# Ignorar archivos de sistema o logs
+.DS_Store
+*.log
+npm-debug.log*
