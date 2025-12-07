@@ -95,5 +95,38 @@ const verificarTrabajador = async (req, res) => {
         else res.json({ existe: false });
     } catch (err) { res.status(500).send('Error verificando'); }
 };
+// 5. OBTENER MIS ESTUDIANTES (DOCENTE)
+const getMisEstudiantesDocente = async (req, res) => {
+    const emailUser = req.usuario.email; 
 
-module.exports = { getTrabajadores, createTrabajador, updateTrabajador, deleteTrabajador, buscarPersonas, verificarTrabajador };
+    try {
+        // 1. Buscar ID del docente
+        const [trabajador] = await pool.query('SELECT id FROM trabajadores WHERE email = ?', [emailUser]);
+        if (trabajador.length === 0) return res.status(404).json({ error: 'Docente no encontrado' });
+        const docenteId = trabajador[0].id;
+
+        // 2. Buscar estudiantes de sus secciones
+        // Lógica: Horario -> Sección -> Matrícula -> Estudiante
+        const sql = `
+            SELECT DISTINCT e.id, e.dni, e.nombres, e.apellidos, e.foto_perfil, 
+                            c.nombre as grado, s.letra as seccion, e.tipo_sangre, e.alergias
+            FROM horarios h
+            JOIN secciones s ON h.seccion_id = s.id
+            JOIN cursos c ON s.curso_id = c.id
+            JOIN matriculas m ON m.seccion_id = s.id
+            JOIN estudiantes e ON m.estudiante_id = e.id
+            WHERE h.docente_id = ?
+            ORDER BY c.nombre, s.letra, e.apellidos
+        `;
+        
+        const [rows] = await pool.query(sql, [docenteId]);
+        res.json(rows);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al obtener mis estudiantes');
+    }
+};
+
+
+module.exports = { getTrabajadores, createTrabajador, updateTrabajador, deleteTrabajador, buscarPersonas, verificarTrabajador, getMisEstudiantesDocente};

@@ -59,7 +59,9 @@ const createMatricula = async (req, res) => {
 const getMatriculas = async (req, res) => {
     try {
         const sql = `
-            SELECT m.id, m.fecha_matricula,m.seccion_id, e.nombres, e.apellidos, e.dni, e.foto_perfil,
+            SELECT m.id, m.fecha_matricula, 
+                   m.seccion_id, 
+                   e.nombres, e.apellidos, e.dni, e.foto_perfil,
                    c.nombre as curso, s.letra, c.nivel
             FROM matriculas m
             JOIN estudiantes e ON m.estudiante_id = e.id

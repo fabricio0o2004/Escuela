@@ -154,5 +154,36 @@ const deleteApoderado = async (req, res) => {
         res.status(500).send('Error al eliminar');
     }
 };
+// 5. OBTENER MIS HIJOS (PARA EL ROL APODERADO)
+// 5. OBTENER MIS HIJOS (CORREGIDO: TRAE ID DE MATRÍCULA)
+const getMisHijos = async (req, res) => {
+    const emailUser = req.usuario.email; 
 
-module.exports = { getApoderados, createApoderado, updateApoderado, deleteApoderado };
+    try {
+        const [papa] = await pool.query('SELECT id FROM apoderados WHERE email = ?', [emailUser]);
+        if (papa.length === 0) return res.status(404).json({ error: 'No se encontró perfil de apoderado.' });
+
+        const apoderadoId = papa[0].id;
+
+        const sql = `
+            SELECT e.id, e.dni, e.nombres, e.apellidos, e.foto_perfil, e.tipo_sangre, e.alergias, e.fecha_nacimiento,
+                   c.nombre as grado, s.letra as seccion, m.anio_escolar,
+                   m.id as matricula_id,
+                   m.seccion_id  -- <--- ¡AGREGAR ESTO! IMPORTANTE PARA EL HORARIO
+            FROM estudiantes e
+            LEFT JOIN matriculas m ON e.id = m.estudiante_id AND m.anio_escolar = 2025
+            LEFT JOIN secciones s ON m.seccion_id = s.id
+            LEFT JOIN cursos c ON s.curso_id = c.id
+            WHERE e.apoderado_id = ?
+        `;
+        
+        const [hijos] = await pool.query(sql, [apoderadoId]);
+        res.json(hijos);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al obtener mis hijos');
+    }
+};
+
+module.exports = { getApoderados, createApoderado, updateApoderado, deleteApoderado, getMisHijos };

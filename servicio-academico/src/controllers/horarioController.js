@@ -68,7 +68,51 @@ const createHorario = async (req, res) => {
     }
 };
 
-// Mantén getHorariosDocente (el que ya tenías para el perfil del profe)
-const getHorariosDocente = async (req, res) => { /* ... tu código antiguo ... */ };
+// 4. VER MIS HORARIOS (PARA EL ROL DOCENTE)
+const getHorariosDocente = async (req, res) => {
+    // El email viene del token decodificado (middleware verificarToken)
+    const emailUser = req.usuario.email; 
 
-module.exports = { createHorario, getHorarioPorSeccion, getHorarioPorDocenteAdmin, getHorariosDocente };
+    try {
+        // PASO A: Buscar al trabajador usando el email del usuario logueado
+        const [trabajador] = await pool.query('SELECT id FROM trabajadores WHERE email = ?', [emailUser]);
+        
+        if (trabajador.length === 0) {
+            return res.status(404).json({ error: 'No se encontró un perfil de docente asociado a este usuario.' });
+        }
+
+        const docenteId = trabajador[0].id;
+
+        // PASO B: Buscar los horarios de ese docente
+        const sql = `
+            SELECT h.dia, h.hora_inicio, h.hora_fin, h.materia,
+                   c.nombre as grado, s.letra as seccion
+            FROM horarios h
+            JOIN secciones s ON h.seccion_id = s.id
+            JOIN cursos c ON s.curso_id = c.id
+            WHERE h.docente_id = ?
+        `;
+        const [rows] = await pool.query(sql, [docenteId]);
+        
+        res.json(rows);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al obtener mis horarios');
+    }
+};
+// 5. ELIMINAR HORARIO
+const deleteHorario = async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Borramos el horario por su ID
+        await pool.query('DELETE FROM horarios WHERE id = ?', [id]);
+        res.json({ mensaje: 'Horario eliminado correctamente' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al eliminar horario');
+    }
+};
+
+// Asegúrate de exportarla al final
+module.exports = { createHorario, getHorarioPorSeccion, getHorarioPorDocenteAdmin, getHorariosDocente, deleteHorario };

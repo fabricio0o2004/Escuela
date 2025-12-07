@@ -88,27 +88,41 @@ function mostrarDashboard() {
 
     // ---> ESTA ES LA PARTE QUE TE FALTABA <---
     if (rol === 1) { // Admin
-        menu.innerHTML += sidebarItemHtml('💼 Gestión de Trabajadores', 'bi-briefcase-fill');
-        menu.innerHTML += sidebarItemHtml('👥 Gestión de Usuarios', 'bi-people-fill');
-        menu.innerHTML += sidebarItemHtml('👨‍👩‍👧‍👦 Gestión de Apoderados', 'bi-person-hearts');
-        menu.innerHTML += sidebarItemHtml('🎓 Ver Estudiantes', 'bi-mortarboard-fill');
-        menu.innerHTML += sidebarItemHtml('📚 Gestión de Cursos', 'bi-book-half');
-        menu.innerHTML += sidebarItemHtml('📅 Asignar Horarios', 'bi-calendar-plus');
-        menu.innerHTML += sidebarItemHtml('📝 Gestión de Matrículas', 'bi-file-earmark-text-fill');
-        menu.innerHTML += sidebarItemHtml('📊 Reportes y Estadísticas', 'bi-bar-chart-fill');
+        menu.innerHTML += sidebarItemHtml('Gestión de Trabajadores', 'bi-briefcase-fill');
+        menu.innerHTML += sidebarItemHtml('Gestión de Usuarios', 'bi-people-fill');
+        menu.innerHTML += sidebarItemHtml('Gestión de Apoderados', 'bi-person-hearts');
+        menu.innerHTML += sidebarItemHtml('Ver Estudiantes', 'bi-mortarboard-fill');
+        menu.innerHTML += sidebarItemHtml('Gestión de Cursos', 'bi-book-half');
+        menu.innerHTML += sidebarItemHtml('Asignar Horarios', 'bi-calendar-plus');
+        menu.innerHTML += sidebarItemHtml('Gestión de Matrículas', 'bi-file-earmark-text-fill');
+        menu.innerHTML += sidebarItemHtml('Reportes y Estadísticas', 'bi-bar-chart-fill');
     }
-    else if (rol === 2) { // Secre
-        menu.innerHTML += sidebarItemHtml('📝 Nueva Matrícula', 'bi-pen-fill');
-        menu.innerHTML += sidebarItemHtml('🎓 Buscar Estudiante', 'bi-search');
-        menu.innerHTML += sidebarItemHtml('👨‍👩‍👧‍👦 Gestión de Apoderados', 'bi-person-hearts');
+
+else if (rol === 2) { // SECRETARÍA (Operativo)
+        // 1. Matrículas: Su herramienta principal
+        menu.innerHTML += sidebarItemHtml('Gestión de Matrículas', 'bi-file-earmark-text-fill');
+        
+        // 2. Gestión de personas (Padres y Alumnos)
+        menu.innerHTML += sidebarItemHtml('Ver Estudiantes', 'bi-person-badge');
+        menu.innerHTML += sidebarItemHtml('Gestión de Apoderados', 'bi-people');
+
+        // 3. Consultas (Solo ver)
+        // Podemos reutilizar las vistas de Admin, pero idealmente quitaríamos los botones de "Editar" 
+        // Si usas los mismos módulos, tendrá poder de edición. Para secretaría suele estar bien que editen.
+        menu.innerHTML += sidebarItemHtml('Gestión de Cursos', 'bi-journal-bookmark'); 
+        
+        // Nota: NO le damos "Asignar Horarios" ni "Gestión de Usuarios" ni "Trabajadores".
     }
+    
     else if (rol === 3) { // Docente
-        menu.innerHTML += sidebarItemHtml('📅 Mis Horarios', 'bi-calendar-week');
-        menu.innerHTML += sidebarItemHtml('📋 Mis Estudiantes', 'bi-list-check');
+        // Debe llamar a cargarHorarioDocente() al hacer clic
+        menu.innerHTML += `<a onclick="cargarHorarioDocente()" class="nav-link-custom" style="cursor:pointer"><i class="bi bi-calendar-week"></i> Mi Horario</a>`;
+       menu.innerHTML += `<a onclick="cargarMisEstudiantesDocente()" class="nav-link-custom" style="cursor:pointer"><i class="bi bi-list-check"></i> Mis Estudiantes</a>`;
     }
+
     else if (rol === 4) { // Padre
-        menu.innerHTML += sidebarItemHtml('✍️ Pre-Inscripción', 'bi-pencil-square');
-        menu.innerHTML += sidebarItemHtml('👪 Mis Hijos', 'bi-emoji-smile');
+        menu.innerHTML += `<a onclick="cargarMisHijos()" class="nav-link-custom" style="cursor:pointer"><i class="bi bi-people-fill"></i> Mis Hijos</a>`;
+        menu.innerHTML += sidebarItemHtml(' Pre-Inscripción', 'bi-pencil-square');
     }
     // ---> FIN DE LA PARTE QUE FALTABA <---
 
@@ -140,37 +154,37 @@ function mostrarDashboard() {
 async function accionClick(titulo) {
     const area = document.getElementById('area-trabajo');
     
-    if (titulo === '👥 Gestión de Usuarios') {
+    if (titulo === 'Gestión de Usuarios') {
         cargarUsuarios(area);
     } 
-    else if (titulo === '👨‍👩‍👧‍👦 Gestión de Apoderados') {
+    else if (titulo === 'Gestión de Apoderados') {
         cargarApoderados(area);
     }
-    else if (titulo === '🎓 Ver Estudiantes' || titulo === '📋 Mis Estudiantes' || titulo === '🎓 Buscar Estudiante') {
+    else if (titulo === 'Ver Estudiantes' || titulo === 'Mis Estudiantes' || titulo === '🎓 Buscar Estudiante') {
         cargarEstudiantes(); 
     } 
-    else if (titulo === '📚 Gestión de Cursos') {
+    else if (titulo === 'Gestión de Cursos') {
         cargarCursos(area);
     }
-    else if (titulo === '📅 Asignar Horarios') {
+    else if (titulo === 'Asignar Horarios') {
         mostrarFormAsignarHorario(area);
     }
-    else if (titulo === '📅 Mis Horarios') {
+    else if (titulo === 'Mis Horarios') {
         cargarHorarioDocente(area);
     }
-    else if (titulo === '📝 Gestión de Matrículas' || titulo === '📝 Nueva Matrícula') {
+    else if (titulo === 'Gestión de Matrículas' || titulo === 'Nueva Matrícula') {
         cargarMatriculas(area);
     }
-    else if (titulo === '📊 Reportes y Estadísticas') {
+    else if (titulo === 'Reportes y Estadísticas') {
         cargarReportes(area);
     }
-    else if (titulo === '💼 Gestión de Trabajadores') {
+    else if (titulo === 'Gestión de Trabajadores') {
         cargarTrabajadores(area);
     }
-    else if (titulo === '✍️ Pre-Inscripción') {
+    else if (titulo === 'Pre-Inscripción') {
         area.innerHTML = '<div class="alert alert-info">Formulario de pre-inscripción en construcción.</div>';
     }
-    else if (titulo === '👪 Mis Hijos') {
+    else if (titulo === 'Mis Hijos') {
         area.innerHTML = '<div class="alert alert-info">Vista de hijos en construcción.</div>';
     }
     else {
@@ -729,13 +743,17 @@ async function eliminarApoderado(id) {
 
 let idEstudianteEditando = null;
 let estudiantesCache = []; // AQUÍ GUARDAMOS LOS DATOS PARA NO RECARGAR AL ABRIR EL MODAL
+let misEstudiantesCache = []; // Guardamos los alumnos en memoria para el rol docente
 
 // 1. CARGAR TABLA
 async function cargarEstudiantes() {
     const token = localStorage.getItem('token');
     const area = document.getElementById('area-trabajo');
-    const user = JSON.parse(atob(token.split('.')[1]));
-    const esAdmin = (user.rol_id === 1);
+    
+    // Decodificar rol
+    const base64Url = token.split('.')[1];
+    const user = JSON.parse(window.atob(base64Url.replace(/-/g, '+').replace(/_/g, '/')));
+    const esAdmin = (user.rol_id === 1 || user.rol_id === 2); // Admin o Secre
 
     area.innerHTML = '<p class="text-center mt-5"><span class="spinner-border text-primary"></span> Cargando estudiantes...</p>';
     
@@ -743,15 +761,17 @@ async function cargarEstudiantes() {
         const res = await fetch(`${API_ACADEMIC}/estudiantes`, { headers: { 'Authorization': `Bearer ${token}` } });
         const list = await res.json();
         
-        // Guardamos la lista en memoria para usarla en el Modal
-        estudiantesCache = list;
-        
+        // BOTÓN SOLO PARA ADMIN/SECRE
+        const btnNuevo = esAdmin 
+            ? `<button class="btn btn-success shadow-sm" onclick="idEstudianteEditando=null; mostrarFormularioEstudiante()">
+                 <i class="bi bi-person-plus-fill"></i> Nuevo Estudiante
+               </button>` 
+            : ''; // Si es docente, vacío
+
         let html = `
             <div class="d-flex justify-content-between mb-3 align-items-center">
                 <h3><i class="bi bi-mortarboard-fill"></i> Estudiantes</h3>
-                <button class="btn btn-success shadow-sm" onclick="idEstudianteEditando=null; mostrarFormularioEstudiante()">
-                    <i class="bi bi-person-plus-fill"></i> Nuevo Estudiante
-                </button>
+                ${btnNuevo}
             </div>
             
             <div class="table-responsive">
@@ -761,135 +781,188 @@ async function cargarEstudiantes() {
                             <th>Foto</th>
                             <th>DNI</th>
                             <th>Apellidos y Nombres</th>
-                            <th>Aula (2025)</th>
+                            <th>Aula</th>
                             <th>Info Médica</th>
-                            <th>Docs</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>`;
         
         list.forEach(e => {
-            // Foto miniatura
-            const foto = e.foto_perfil 
-                ? `<img src="${e.foto_perfil}" width="45" height="45" class="rounded-circle border border-2" style="object-fit: cover;">` 
-                : `<div class="rounded-circle bg-light d-flex align-items-center justify-content-center border" style="width:45px;height:45px;font-size:20px">👤</div>`;
-            
-            const doc = e.documento_pdf 
-                ? `<a href="${e.documento_pdf}" target="_blank" class="btn btn-sm btn-outline-danger" title="Ver PDF"><i class="bi bi-file-earmark-pdf-fill"></i></a>` 
-                : '<span class="text-muted small">-</span>';
-            
-            const aulaInfo = e.grado_nombre 
-                ? `<span class="badge bg-info text-dark">${e.grado_nombre} "${e.seccion_letra}"</span>` 
-                : `<span class="badge bg-secondary">Sin matrícula</span>`;
+            const foto = e.foto_perfil ? `<img src="${e.foto_perfil}" width="40" height="40" class="rounded-circle">` : '👤';
+            const aulaInfo = e.grado_nombre ? `<span class="badge bg-info text-dark">${e.grado_nombre} "${e.seccion_letra}"</span>` : '<span class="badge bg-secondary">--</span>';
 
-            // Botones de Acción
-            let botones = `
-                <div class="btn-group">
-                    <button class="btn btn-info btn-sm text-white" title="Ver Perfil Completo" onclick="verModalEstudiante(${e.id})">
-                        <i class="bi bi-eye-fill"></i>
-                    </button>
-
-                    <button class="btn btn-warning btn-sm" title="Editar" 
-                        onclick="cargarEdicionEstudiante(${e.id}, '${e.dni}', '${e.nombres}', '${e.apellidos}', '${e.fecha_nacimiento||''}', '${e.direccion||''}', '${e.tipo_sangre||''}', '${e.alergias||''}')">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
-            `;
+            // Botones limitados para docente (Solo ver)
+            let acciones = `<button class="btn btn-info btn-sm text-white" onclick="verModalEstudiante(${e.id})"><i class="bi bi-eye-fill"></i></button>`;
             
-            if(esAdmin) {
-                botones += `
-                    <button class="btn btn-danger btn-sm" title="Eliminar" onclick="eliminarEstudiante(${e.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                `;
+            if (esAdmin) {
+                acciones += ` <button class="btn btn-warning btn-sm" onclick="cargarEdicionEstudiante(${e.id}, '${e.dni}', '${e.nombres}', '${e.apellidos}', '${e.fecha_nacimiento||''}', '${e.direccion||''}', '${e.tipo_sangre||''}', '${e.alergias||''}')"><i class="bi bi-pencil-square"></i></button>`;
+                acciones += ` <button class="btn btn-danger btn-sm" onclick="eliminarEstudiante(${e.id})"><i class="bi bi-trash"></i></button>`;
             }
-            botones += `</div>`;
 
-            html += `
-                <tr>
-                    <td>${foto}</td>
-                    <td class="fw-bold">${e.dni}</td>
-                    <td>${e.apellidos}, ${e.nombres}</td>
-                    <td>${aulaInfo}</td>
-                    <td><small class="d-block text-muted">${e.tipo_sangre||'--'} | ${e.alergias||'Sin alergias'}</small></td>
-                    <td>${doc}</td>
-                    <td>${botones}</td>
-                </tr>`;
+            html += `<tr><td>${foto}</td><td>${e.dni}</td><td>${e.apellidos}, ${e.nombres}</td><td>${aulaInfo}</td><td><small>${e.tipo_sangre||'--'}</small></td><td>${acciones}</td></tr>`;
         });
-        area.innerHTML = html + '</tbody></table></div>';
         
-        // Agregamos el contenedor del modal al final del área (oculto por defecto)
-        area.innerHTML += `<div id="modal-detalle-container"></div>`;
+        area.innerHTML = html + '</tbody></table></div><div id="modal-detalle-container"></div>';
 
-    } catch (e) { area.innerHTML = '<div class="alert alert-danger">Error cargando datos del servidor.</div>'; }
+    } catch (e) { area.innerHTML = 'Error cargando datos.'; }
 }
-
 // 2. FUNCIÓN PARA MOSTRAR EL MODAL CON DATOS
-function verModalEstudiante(id) {
-    // Buscamos al estudiante en la memoria (caché)
-    const e = estudiantesCache.find(est => est.id === id);
-    if (!e) return;
+// =======================================================
+// FUNCION AUXILIAR: VER FICHA DE ESTUDIANTE (ADMIN/SECRE)
+// =======================================================
 
-    const fotoGrande = e.foto_perfil 
-        ? `<img src="${e.foto_perfil}" class="img-fluid rounded shadow-sm border" style="width: 100%; max-height: 300px; object-fit: cover;">`
-        : `<div class="bg-light rounded d-flex align-items-center justify-content-center text-muted border" style="height: 250px; font-size: 5rem;"><i class="bi bi-person"></i></div>`;
+// =======================================================
+// FICHA ADMINISTRATIVA (PARA ADMIN Y SECRETARIA)
+// Muestra: Datos Personales, Médicos, Documentos y Contacto del Padre
+// =======================================================
 
-    const fechaNac = e.fecha_nacimiento ? new Date(e.fecha_nacimiento).toLocaleDateString() : 'No registrada';
-    const edadCalculada = e.fecha_nacimiento ? (new Date().getFullYear() - new Date(e.fecha_nacimiento).getFullYear()) + ' años' : '';
+// =======================================================
+// FICHA ADMINISTRATIVA (PARA ADMIN Y SECRETARIA)
+// Diseño: Foto flotante, datos médicos y contacto
+// =======================================================
 
-    // HTML del Modal (Estilo Bootstrap)
+// =======================================================
+// FICHA ADMINISTRATIVA (BLINDADA A PRUEBA DE FALLOS)
+// =======================================================
+
+async function verModalEstudiante(id) {
+    const token = localStorage.getItem('token');
+    let alumno = null;
+
+    // 1. Intentamos buscar en memoria primero
+    if (typeof estudiantesCache !== 'undefined' && estudiantesCache.length > 0) {
+        // Convertimos a String para asegurar que coincida (5 vs "5")
+        alumno = estudiantesCache.find(e => String(e.id) === String(id));
+    }
+
+    // 2. Si NO está en memoria, lo pedimos al servidor (Plan B)
+    if (!alumno) {
+        try {
+            const res = await fetch(`${API_ACADEMIC}/estudiantes`, { 
+                headers: { 'Authorization': `Bearer ${token}` } 
+            });
+            const lista = await res.json();
+            
+            // Actualizamos la caché ya que estamos aquí
+            estudiantesCache = lista;
+            
+            // Buscamos de nuevo
+            alumno = lista.find(e => String(e.id) === String(id));
+        } catch (e) {
+            console.error(e);
+            return alert("Error de conexión al buscar el estudiante.");
+        }
+    }
+
+    // Si después de todo sigue sin aparecer...
+    if (!alumno) return alert("Estudiante no encontrado en la base de datos.");
+
+    // 3. Preparar Datos Visuales
+    const fechaNac = alumno.fecha_nacimiento ? new Date(alumno.fecha_nacimiento).toLocaleDateString() : 'No registrada';
+    
+    // Calcular edad
+    let edad = "";
+    if (alumno.fecha_nacimiento) {
+        const hoy = new Date();
+        const nac = new Date(alumno.fecha_nacimiento);
+        let e = hoy.getFullYear() - nac.getFullYear();
+        if (hoy.getMonth() < nac.getMonth() || (hoy.getMonth() === nac.getMonth() && hoy.getDate() < nac.getDate())) e--;
+        edad = `(${e} años)`;
+    }
+
+    // Avatar
+    const avatar = (alumno.foto_perfil && alumno.foto_perfil !== "null")
+        ? `<img src="${alumno.foto_perfil}" class="rounded-circle shadow border border-3 border-white" style="width: 120px; height: 120px; object-fit: cover; margin-top: -60px;">`
+        : `<div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow border border-3 border-white" style="width: 120px; height: 120px; font-size: 3rem; margin: 0 auto; margin-top: -60px;">${alumno.nombres.charAt(0)}</div>`;
+
+    // Estado Matrícula
+    const estadoAula = alumno.grado_nombre 
+        ? `<span class="badge bg-success">${alumno.grado_nombre} "${alumno.seccion_letra}"</span>`
+        : `<span class="badge bg-secondary">No Matriculado</span>`;
+
+    // Datos del Padre
+    const infoApoderado = alumno.apoderado_nombre
+        ? `<div class="p-2 bg-white border rounded mb-1">
+             <div class="fw-bold text-dark"><i class="bi bi-person-fill"></i> ${alumno.apoderado_nombre} ${alumno.apoderado_apellido}</div>
+             <div class="text-primary small"><i class="bi bi-telephone-fill"></i> ${alumno.apoderado_telefono}</div>
+             <div class="text-muted small"><i class="bi bi-envelope"></i> ${alumno.apoderado_email || 'Sin correo'}</div>
+           </div>`
+        : `<div class="alert alert-warning py-1 small mb-0">Sin apoderado asignado</div>`;
+
+
+    // 4. HTML DEL MODAL
     const modalHtml = `
-        <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title"><i class="bi bi-person-badge-fill"></i> Perfil del Estudiante</h5>
-                        <button type="button" class="btn-close btn-close-white" onclick="cerrarModalDetalle()"></button>
+    <div class="modal fade" id="modalAdminEstudiante" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-visible">
+                
+                <div class="modal-header bg-primary text-white border-bottom-0 p-4" style="border-radius: 1rem 1rem 0 0;">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-person-fill"></i> Legajo del Estudiante</h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="cerrarModalAdmin()"></button>
+                </div>
+
+                <div class="modal-body p-4 pt-0">
+                    <div class="text-center mb-3 position-relative">
+                        ${avatar}
+                        <h4 class="fw-bold text-dark mt-2 mb-0">${alumno.nombres}</h4>
+                        <h5 class="text-muted fs-6">${alumno.apellidos}</h5>
+                        <div class="mt-2">${estadoAula} <span class="badge bg-dark">DNI: ${alumno.dni}</span></div>
                     </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-4 text-center mb-3">
-                                ${fotoGrande}
-                                <h5 class="mt-3 fw-bold">${e.nombres}</h5>
-                                <h6 class="text-muted">${e.apellidos}</h6>
-                                <span class="badge bg-dark mt-1">DNI: ${e.dni}</span>
-                            </div>
-                            
-                            <div class="col-md-8">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><strong>🎂 Fecha Nacimiento:</strong> ${fechaNac} (${edadCalculada})</li>
-                                    <li class="list-group-item"><strong>📍 Dirección:</strong> ${e.direccion || 'No registrada'}</li>
-                                    <li class="list-group-item"><strong>🏫 Aula Actual:</strong> ${e.grado_nombre ? `<span class="badge bg-info text-dark">${e.grado_nombre} "${e.seccion_letra}"</span>` : '<span class="text-danger">No matriculado</span>'}</li>
-                                    
-                                    <li class="list-group-item bg-light mt-2"><strong>🏥 Información Médica</strong></li>
-                                    <li class="list-group-item">🩸 <strong>Tipo de Sangre:</strong> ${e.tipo_sangre || '--'}</li>
-                                    <li class="list-group-item">⚠️ <strong>Alergias:</strong> ${e.alergias || 'Ninguna'}</li>
-                                    
-                                    <li class="list-group-item bg-light mt-2"><strong>👨‍👩‍👧‍👦 Apoderado</strong></li>
-                                    <li class="list-group-item">
-                                        ${e.apoderado_nombre 
-                                            ? `${e.apoderado_nombre} ${e.apoderado_apellido} <br><small class="text-muted"><i class="bi bi-telephone"></i> ${e.apoderado_telefono}</small>` 
-                                            : '<span class="text-muted">Sin apoderado asignado</span>'}
-                                    </li>
-                                </ul>
-                            </div>
+
+                    <div class="card bg-light border-0 rounded-3 p-3">
+                        <h6 class="text-primary border-bottom pb-1 mb-2 fw-bold">📍 Datos Personales</h6>
+                        <div class="row g-2 mb-3 small">
+                            <div class="col-6"><strong>Nacimiento:</strong><br>${fechaNac} ${edad}</div>
+                            <div class="col-6"><strong>Dirección:</strong><br>${alumno.direccion || '-'}</div>
                         </div>
+
+                        <h6 class="text-danger border-bottom pb-1 mb-2 fw-bold">🏥 Salud</h6>
+                        <div class="row g-2 mb-3 small">
+                            <div class="col-6"><strong>Tipo Sangre:</strong><br>${alumno.tipo_sangre || '--'}</div>
+                            <div class="col-6"><strong>Alergias:</strong><br>${alumno.alergias || 'Ninguna registrada'}</div>
+                        </div>
+
+                        <h6 class="text-success border-bottom pb-1 mb-2 fw-bold">📞 Contacto Apoderado</h6>
+                        ${infoApoderado}
                     </div>
-                    <div class="modal-footer">
-                        ${e.documento_pdf ? `<a href="${e.documento_pdf}" target="_blank" class="btn btn-outline-danger"><i class="bi bi-file-pdf"></i> Ver Documento</a>` : ''}
-                        <button type="button" class="btn btn-secondary" onclick="cerrarModalDetalle()">Cerrar</button>
-                    </div>
+
+                    ${(alumno.documento_pdf && alumno.documento_pdf !== "null") ? `
+                    <div class="d-grid mt-3">
+                        <a href="${alumno.documento_pdf}" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill">
+                            <i class="bi bi-file-earmark-pdf-fill"></i> Ver Documento Adjunto
+                        </a>
+                    </div>` : ''}
+
+                </div>
+                
+                <div class="modal-footer border-0 pt-0 justify-content-center">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" onclick="cerrarModalAdmin()">Cerrar</button>
                 </div>
             </div>
         </div>
-    `;
+    </div>`;
 
     document.getElementById('modal-detalle-container').innerHTML = modalHtml;
+    
+    const modalEl = document.getElementById('modalAdminEstudiante');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
 }
 
-// Función para cerrar el modal (limpia el HTML)
-function cerrarModalDetalle() {
-    document.getElementById('modal-detalle-container').innerHTML = '';
+// Función para cerrar correctamente
+function cerrarModalAdmin() {
+    const modalEl = document.getElementById('modalAdminEstudiante');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if(modal) modal.hide();
+        setTimeout(() => {
+            document.getElementById('modal-detalle-container').innerHTML = '';
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style = '';
+        }, 300);
+    }
 }
 
 // 3. MOSTRAR FORMULARIO (CREAR / EDITAR)
@@ -989,6 +1062,165 @@ async function eliminarEstudiante(id) {
         const res = await fetch(`${API_ACADEMIC}/estudiantes/${id}`, { method: 'DELETE', headers: {'Authorization': `Bearer ${token}`} });
         if(res.ok) { alert('Eliminado'); cargarEstudiantes(); } else { const d=await res.json(); alert(d.error); }
     } catch(e) { alert('Error de conexión'); }
+}
+// 1. VISTA PRINCIPAL: TARJETAS DE SECCIONES ASIGNADAS
+async function cargarMisEstudiantesDocente() {
+    const area = document.getElementById('area-trabajo');
+    const token = localStorage.getItem('token');
+    
+    area.innerHTML = '<p class="text-center mt-5"><span class="spinner-border text-success"></span> Cargando mis aulas...</p>';
+
+    try {
+        const res = await fetch(`${API_ACADEMIC}/trabajadores/mis-estudiantes`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const list = await res.json();
+        
+        misEstudiantesCache = list; 
+
+        // Agrupar por sección
+        const seccionesMap = {};
+        list.forEach(e => {
+            // TRUCO: Quitamos las comillas dobles del nombre para el ID interno
+            // Usaremos '1ro Grado A' en vez de '1ro Grado "A"' para la clave
+            const nombreLimpio = `${e.grado} ${e.seccion}`; 
+            
+            if (!seccionesMap[nombreLimpio]) {
+                seccionesMap[nombreLimpio] = [];
+            }
+            seccionesMap[nombreLimpio].push(e);
+        });
+
+        let html = `
+            <div class="mb-4">
+                <h3 class="fw-bold text-dark"><i class="bi bi-person-workspace text-success"></i> Mis Aulas</h3>
+                <p class="text-muted small">Selecciona una sección para ver la lista.</p>
+            </div>
+            <div class="row g-4">`;
+
+        const aulas = Object.keys(seccionesMap);
+
+        if (aulas.length === 0) {
+            html += `<div class="col-12"><div class="alert alert-warning text-center">Aún no tienes estudiantes asignados.</div></div>`;
+        }
+
+        aulas.forEach(aulaNombre => {
+            const cantidad = seccionesMap[aulaNombre].length;
+            const esPrimaria = aulaNombre.includes('Grado'); 
+            const colorBorde = esPrimaria ? 'border-success' : 'border-primary';
+            const badgeColor = esPrimaria ? 'bg-success' : 'bg-primary';
+
+            // AQUÍ ESTÁ EL ARREGLO: Pasamos 'aulaNombre' que ya no tiene comillas dobles
+            html += `
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100 shadow-sm border-0 hover-effect" 
+                         style="cursor: pointer; transition: transform 0.2s;"
+                         onclick="verListaMisAlumnos('${aulaNombre}')" 
+                         onmouseover="this.style.transform='translateY(-5px)'" 
+                         onmouseout="this.style.transform='translateY(0)'">
+                        
+                        <div class="card-header bg-white border-top border-4 ${colorBorde} pt-3 border-bottom-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge ${badgeColor} bg-opacity-10 text-dark px-2 py-1 rounded-pill small">
+                                    ${esPrimaria ? 'Primaria' : 'Secundaria'}
+                                </span>
+                                <i class="bi bi-people text-muted"></i>
+                            </div>
+                        </div>
+
+                        <div class="card-body text-center">
+                            <h4 class="fw-bold text-dark mb-1">${aulaNombre.replace(/ ([A-Z])$/, ' "$1"')}</h4>
+                            <p class="text-muted small mb-3">${cantidad} Estudiantes</p>
+                            
+                            <div class="avatar-group d-flex justify-content-center mb-2">
+                                <i class="bi bi-person-circle fs-4 text-secondary me-1" style="opacity:0.8"></i>
+                                <i class="bi bi-person-circle fs-4 text-secondary me-1" style="opacity:0.6"></i>
+                                <i class="bi bi-person-circle fs-4 text-secondary" style="opacity:0.4"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-white border-0 text-center pb-3">
+                            <span class="btn btn-outline-success btn-sm rounded-pill px-4">Ver Lista</span>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        html += `</div>`;
+        area.innerHTML = html;
+
+    } catch (e) { 
+        console.error(e);
+        area.innerHTML = '<div class="alert alert-danger">Error cargando mis estudiantes.</div>'; 
+    }
+}
+
+// 2. VISTA DETALLE: LISTA DE ALUMNOS DE UN AULA 
+function verListaMisAlumnos(aulaNombreLimpio) {
+    const area = document.getElementById('area-trabajo');
+    
+    // Filtramos usando la misma lógica de nombre limpio
+    const alumnos = misEstudiantesCache.filter(e => `${e.grado} ${e.seccion}` === aulaNombreLimpio);
+    
+    // Ordenar alfabéticamente
+    alumnos.sort((a, b) => a.apellidos.localeCompare(b.apellidos));
+
+    // Recuperamos el título con comillas visualmente
+    const tituloVisual = aulaNombreLimpio.replace(/ ([A-Z])$/, ' "$1"');
+
+    let html = `
+        <div class="d-flex align-items-center mb-4">
+            <button class="btn btn-outline-secondary me-3 rounded-circle shadow-sm" onclick="cargarMisEstudiantesDocente()" style="width:45px;height:45px">
+                <i class="bi bi-arrow-left fs-5"></i>
+            </button>
+            <div>
+                <h3 class="fw-bold mb-0 text-success">${tituloVisual}</h3>
+                <span class="text-muted small">Listado de clase (${alumnos.length} alumnos)</span>
+            </div>
+            <div class="ms-auto">
+                 <button class="btn btn-success btn-sm rounded-pill px-3" onclick="alert('Próximamente: Notas por Bimestre')">
+                    <i class="bi bi-table"></i> Notas
+                </button>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm overflow-hidden rounded-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary small text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3" style="width: 50px;">#</th>
+                            <th>Apellidos y Nombres</th>
+                            <th>DNI</th>
+                            </tr>
+                    </thead>
+                    <tbody class="border-top-0">`;
+
+    if (alumnos.length === 0) {
+        html += `<tr><td colspan="3" class="text-center p-5 text-muted">No hay estudiantes en esta lista.</td></tr>`;
+    }
+
+    alumnos.forEach((e, index) => {
+        let avatarHtml;
+        if (e.foto_perfil && e.foto_perfil !== "null") {
+            avatarHtml = `<img src="${e.foto_perfil}" class="rounded-circle border shadow-sm" style="width: 35px; height: 35px; object-fit: cover;">`;
+        } else {
+            avatarHtml = `<div class="rounded-circle bg-success bg-opacity-25 text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px; font-size: 0.8rem;">${e.nombres.charAt(0)}</div>`;
+        }
+
+        html += `
+            <tr>
+                <td class="ps-4 fw-bold text-muted">${index + 1}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">${avatarHtml}</div>
+                        <span class="fw-bold text-dark">${e.apellidos}, ${e.nombres}</span>
+                    </div>
+                </td>
+                <td><span class="font-monospace text-secondary">${e.dni}</span></td>
+                </tr>`;
+    });
+
+    html += `</tbody></table></div></div>`;
+    area.innerHTML = html;
 }
 
 // =======================================================
@@ -1219,6 +1451,30 @@ async function verAlumnosSeccion(seccionId, cursoNombre, letra) {
         alert("Error cargando alumnos");
         cerrarModalAlumnos();
     }
+}
+// FUNCIÓN AUXILIAR: MODAL DE "SIN ALUMNOS"
+function mostrarModalVacio(curso, letra) {
+    const modalHtml = `
+    <div class="modal fade" id="modalVacio" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content text-center rounded-4 border-0 shadow">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-folder2-open text-muted display-1 opacity-25"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Aula Vacía</h5>
+                    <p class="text-muted small mb-3">
+                        La sección <strong>${curso} "${letra}"</strong> aún no tiene estudiantes matriculados.
+                    </p>
+                    <button type="button" class="btn btn-dark rounded-pill w-100 btn-sm" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById('modal-container').innerHTML = modalHtml;
+    const modal = new bootstrap.Modal(document.getElementById('modalVacio'));
+    modal.show();
 }
 // FUNCIÓN PARA FILTRAR (Se ejecuta al escribir)
 function filtrarAlumnosSeccion() {
@@ -1588,6 +1844,95 @@ async function guardarHorario(e) {
         }
     } catch (err) { alert('Error de conexión'); }
 }
+
+
+// =======================================================
+// VISTA EXCLUSIVA PARA DOCENTES (SOLO LECTURA)
+// =======================================================
+
+async function cargarHorarioDocente() {
+    const area = document.getElementById('area-trabajo');
+    const token = localStorage.getItem('token');
+    
+    area.innerHTML = '<p class="text-center mt-5"><span class="spinner-border text-warning"></span> Cargando mi agenda...</p>';
+
+    try {
+        // Llamamos al endpoint que usa el token para saber quién soy
+        const res = await fetch(`${API_ACADEMIC}/horarios/mis-horarios`, { 
+            headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        
+        if (!res.ok) throw new Error("No se pudo cargar el horario");
+        
+        const misClases = await res.json();
+
+        // Dibujamos la estructura
+        let html = `
+            <div class="d-flex align-items-center mb-4">
+                <h3 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-calendar-check text-warning"></i> Mi Agenda Semanal
+                </h3>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center mb-0 align-middle">
+                        <thead class="bg-dark text-white">
+                            <tr>
+                                <th style="width:100px" class="py-3">Horario</th>
+                                <th class="py-3">Lunes</th>
+                                <th class="py-3">Martes</th>
+                                <th class="py-3">Miércoles</th>
+                                <th class="py-3">Jueves</th>
+                                <th class="py-3">Viernes</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+        BLOQUES_HORARIO.forEach(bloque => {
+            html += `<tr><td class="fw-bold bg-light text-secondary small">${bloque.inicio} - ${bloque.fin}</td>`;
+
+            if (bloque.tipo === 'RECREO') {
+                html += `<td colspan="5" class="bg-success bg-opacity-10 text-success fw-bold py-2 small" style="letter-spacing: 1px;">☕ RECREO / BREAK</td></tr>`;
+                return;
+            }
+
+            DIAS_SEMANA.forEach(dia => {
+                const clase = misClases.find(h => h.dia === dia && h.hora_inicio.toString().startsWith(bloque.inicio));
+
+                if (clase) {
+                    html += `
+                        <td class="p-1 position-relative" style="background-color: #fff8e1; border-bottom: 3px solid #ffc107;">
+                            <div class="p-2">
+                                <div class="fw-bold text-dark text-uppercase small">${clase.materia}</div>
+                                <span class="badge bg-dark mt-1 rounded-pill">
+                                    ${clase.grado} "${clase.seccion}"
+                                </span>
+                            </div>
+                        </td>`;
+                } else {
+                    html += `<td class="bg-white"></td>`;
+                }
+            });
+            html += `</tr>`;
+        });
+
+        html += `</tbody></table></div></div>`;
+        
+        // (SE ELIMINÓ EL DIV DE RESUMEN DE HORAS AQUÍ)
+
+        area.innerHTML = html;
+
+    } catch (e) {
+        console.error(e);
+        area.innerHTML = `
+            <div class="alert alert-warning text-center p-5 shadow-sm rounded-4">
+                <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+                <h4>No se encontró horario</h4>
+                <p class="text-muted">Parece que tu usuario no está vinculado correctamente a un registro de docente o aún no te han asignado clases.</p>
+            </div>`;
+    }
+}
 // =======================================================
 // 9. MÓDULO: GESTIÓN DE MATRÍCULAS (AGRUPADO POR SECCIONES)
 // =======================================================
@@ -1691,13 +2036,30 @@ async function cargarMatriculas(area) {
 }
 
 // 2. VISTA DETALLE: LISTA DE ALUMNOS (Igual que antes, pero filtrando seguro)
-function verAlumnosDeSeccion(seccionId, nombreCurso, letra) {
+// 2. VISTA DETALLE: VER ALUMNOS DE UNA SECCIÓN ESPECÍFICA
+// 2. VISTA DETALLE: LOGICA INTELIGENTE (LISTA O AVISO)
+async function verAlumnosDeSeccion(seccionId, nombreCurso, letra) {
     const area = document.getElementById('area-trabajo');
     
-    // Filtramos de la memoria usando el ID exacto de la sección
-    const alumnos = matriculasCache.filter(m => m.seccion_id === seccionId);
+    // 1. Asegurar datos
+    if (!matriculasCache || matriculasCache.length === 0) {
+        try {
+            const res = await fetch(`${API_ACADEMIC}/matriculas`);
+            matriculasCache = await res.json();
+        } catch (e) { return alert("Error recuperando datos."); }
+    }
+    
+    // 2. Filtrar alumnos (Comparación Segura de Texto/Número)
+    const alumnos = matriculasCache.filter(m => String(m.seccion_id) === String(seccionId));
 
-    // Ordenar alfabéticamente
+    // 3. DECISIÓN: ¿ESTÁ VACÍO?
+    if (alumnos.length === 0) {
+        // CASO A: VACÍO -> MOSTRAMOS MODAL DE AVISO
+        mostrarModalVacio(nombreCurso, letra);
+        return; // Nos detenemos aquí, no cambiamos la pantalla
+    }
+
+    // CASO B: HAY ALUMNOS -> MOSTRAMOS LA TABLA
     alumnos.sort((a, b) => a.apellidos.localeCompare(b.apellidos));
 
     let html = `
@@ -1706,8 +2068,13 @@ function verAlumnosDeSeccion(seccionId, nombreCurso, letra) {
                 <i class="bi bi-arrow-left fs-5"></i>
             </button>
             <div>
-                <h3 class="fw-bold mb-0">${nombreCurso} "${letra}"</h3>
+                <h3 class="fw-bold mb-0 text-dark">${nombreCurso} "${letra}"</h3>
                 <span class="text-muted small">Listado oficial de estudiantes (${alumnos.length})</span>
+            </div>
+            <div class="ms-auto">
+                 <button class="btn btn-success btn-sm rounded-pill px-3" onclick="alert('Función: Exportar a Excel')">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar Lista
+                </button>
             </div>
         </div>
 
@@ -1719,23 +2086,19 @@ function verAlumnosDeSeccion(seccionId, nombreCurso, letra) {
                             <th class="ps-4 py-3" style="width: 50px;">#</th>
                             <th>Estudiante</th>
                             <th>DNI</th>
-                            <th>Fecha Inscripción</th>
+                            <th>Fecha</th>
                             <th class="text-end pe-4">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">`;
 
-    if (alumnos.length === 0) {
-        html += `<tr><td colspan="5" class="text-center p-5 text-muted">Aún no hay alumnos matriculados en esta sección.</td></tr>`;
-    }
-
     alumnos.forEach((m, index) => {
         const fechaObj = new Date(m.fecha_matricula);
-        const fechaTexto = fechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+        const fechaTexto = fechaObj.toLocaleDateString('es-ES');
 
         let avatarHtml;
         if (m.foto_perfil && m.foto_perfil !== "null") {
-            avatarHtml = `<img src="${m.foto_perfil}" class="rounded-circle border border-2 border-white shadow-sm" style="width: 40px; height: 40px; object-fit: cover;">`;
+            avatarHtml = `<img src="${m.foto_perfil}" class="rounded-circle border border-2 shadow-sm" style="width: 40px; height: 40px; object-fit: cover;">`;
         } else {
             const iniciales = `${m.nombres.charAt(0)}${m.apellidos.charAt(0)}`.toUpperCase();
             avatarHtml = `<div class="rounded-circle bg-warning bg-opacity-25 text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; font-size: 0.9rem;">${iniciales}</div>`;
@@ -1751,7 +2114,7 @@ function verAlumnosDeSeccion(seccionId, nombreCurso, letra) {
                     </div>
                 </td>
                 <td><span class="font-monospace text-secondary">${m.dni}</span></td>
-                <td><small class="text-muted"><i class="bi bi-calendar"></i> ${fechaTexto}</small></td>
+                <td><small class="text-muted">${fechaTexto}</small></td>
                 <td class="text-end pe-4">
                     <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="verDetalleMatricula(${m.id})">
                         <i class="bi bi-eye-fill me-1"></i> Detalle
@@ -1762,7 +2125,7 @@ function verAlumnosDeSeccion(seccionId, nombreCurso, letra) {
 
     html += `</tbody></table></div></div>`;
     area.innerHTML = html;
-}
+}   
 
 // 3. FORMULARIO Y GUARDADO (Se mantienen igual)
 async function formMatricula() {
@@ -2244,13 +2607,13 @@ function mostrarInicio() {
         <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center animate-fade-in">
             
             <div class="mb-4">
-                <h2 class="fw-bold text-dark display-6">¡Hola, ${nombreUsuario}! 👋</h2>
+                <h2 class="fw-bold text-dark display-6">¡Hola, ${nombreUsuario}! </h2>
                 <p class="text-muted fs-5">Bienvenido al Panel de Gestión Escolar</p>
             </div>
 
             <div class="position-relative mb-4" style="max-width: 600px; width: 100%;">
                 <div class="ratio ratio-16x9 shadow-lg rounded-4 overflow-hidden border border-4 border-white">
-                    <img src="img/gaaa.png" 
+                    <img src="img/logo.png" 
                          class="object-fit-cover" 
                          alt="Imagen Institucional"
                          onerror="this.src='https://img.freepik.com/free-vector/school-building-illustration_138676-2413.jpg'">
@@ -2264,6 +2627,167 @@ function mostrarInicio() {
 
         </div>
     `;
+}
+
+// =======================================================
+// 11. MÓDULO: PORTAL DEL APODERADO (MIS HIJOS)
+// =======================================================
+
+
+// =======================================================
+// 11. MÓDULO: PORTAL DEL APODERADO (FINAL Y LIMPIO)
+// =======================================================
+
+// Variable global para este módulo
+let misHijosCache = [];
+
+async function cargarMisHijos() {
+    const area = document.getElementById('area-trabajo');
+    const token = localStorage.getItem('token');
+    
+    area.innerHTML = '<p class="text-center mt-5"><span class="spinner-border text-info"></span> Cargando información familiar...</p>';
+
+    try {
+        const res = await fetch(`${API_ACADEMIC}/apoderados/mis-hijos`, { 
+            headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        
+        if (!res.ok) throw new Error("Error al obtener datos");
+        
+        misHijosCache = await res.json();
+
+        let html = `
+            <div class="mb-4">
+                <h3 class="fw-bold text-dark"><i class="bi bi-emoji-smile text-warning"></i> Mis Hijos</h3>
+                <p class="text-muted small">Información académica de sus estudiantes a cargo.</p>
+            </div>
+            <div class="row g-4">`;
+
+        if (misHijosCache.length === 0) {
+            html += `<div class="col-12"><div class="alert alert-info text-center">No tiene hijos vinculados a esta cuenta. Comuníquese con secretaría.</div></div>`;
+        }
+
+        misHijosCache.forEach(h => {
+            // Avatar
+            let avatarHtml;
+            if (h.foto_perfil && h.foto_perfil !== "null") {
+                avatarHtml = `<img src="${h.foto_perfil}" class="rounded-circle border border-4 border-white shadow" style="width: 100px; height: 100px; object-fit: cover; margin-top: -50px;">`;
+            } else {
+                avatarHtml = `<div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center fw-bold shadow border border-4 border-white" style="width: 100px; height: 100px; font-size: 2.5rem; margin: 0 auto; margin-top: -50px;">${h.nombres.charAt(0)}</div>`;
+            }
+
+            const estadoMatricula = h.grado 
+                ? `<span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1 rounded-pill">Matriculado: ${h.grado} "${h.seccion}"</span>`
+                : `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-1 rounded-pill">No Matriculado 2025</span>`;
+
+            const accionFicha = h.seccion_id 
+                ? `verFichaCompletaHijo(${h.id})` 
+                : `alert('El estudiante aún no tiene aula asignada.')`;
+
+            html += `
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 pt-5 mt-3">
+                        <div class="text-center px-3">
+                            ${avatarHtml}
+                            <h4 class="fw-bold text-dark mt-3 mb-1">${h.nombres.split(' ')[0]} ${h.apellidos.split(' ')[0]}</h4>
+                            <p class="text-muted small mb-3">DNI: ${h.dni}</p>
+                            ${estadoMatricula}
+                        </div>
+                        <div class="card-body mt-3">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary rounded-pill" onclick="${accionFicha}">
+                                    <i class="bi bi-person-lines-fill"></i> Ver Ficha & Horario
+                                </button>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        area.innerHTML = html;
+
+    } catch (e) { area.innerHTML = `<div class="alert alert-danger text-center">Error de conexión.</div>`; }
+}
+// =======================================================
+// VISTA FICHA COMPLETA DEL HIJO (VERSIÓN OPTIMIZADA)
+// =======================================================
+
+// VISTA FICHA COMPLETA DEL HIJO (SIN PDF NI ALERTAS MÉDICAS)
+async function verFichaCompletaHijo(idEstudiante) {
+    try {
+        const datosHijo = misHijosCache.find(h => h.id === idEstudiante);
+        if (!datosHijo) return alert("Error: Datos no encontrados.");
+
+        const token = localStorage.getItem('token');
+        const resHorario = await fetch(`${API_ACADEMIC}/horarios/seccion/${datosHijo.seccion_id}`, {
+             headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        const horario = await resHorario.json();
+
+        // Tabla de Horario
+        let tablaHorarioHtml = '';
+        const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        
+        tablaHorarioHtml = `
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered table-sm text-center" style="font-size: 0.8rem;">
+                    <thead class="table-light">
+                        <tr><th>Hora</th>${dias.map(d => `<th>${d.substr(0,3)}</th>`).join('')}</tr>
+                    </thead>
+                    <tbody>`;
+
+        BLOQUES_HORARIO.forEach(b => {
+            if(b.tipo === 'RECREO') {
+                tablaHorarioHtml += `<tr class="table-success"><td colspan="6" class="py-1 fw-bold text-success">RECREO</td></tr>`;
+                return;
+            }
+            tablaHorarioHtml += `<tr><td class="fw-bold text-muted">${b.inicio}</td>`;
+            dias.forEach(dia => {
+                const clase = horario.find(h => h.dia === dia && h.hora_inicio.toString().startsWith(b.inicio));
+                tablaHorarioHtml += clase ? `<td class="bg-primary bg-opacity-10 text-primary fw-bold border-white p-2">${clase.materia}</td>` : `<td></td>`;
+            });
+            tablaHorarioHtml += `</tr>`;
+        });
+        tablaHorarioHtml += `</tbody></table></div>`;
+
+        // Modal
+        const avatar = datosHijo.foto_perfil 
+            ? `<img src="${datosHijo.foto_perfil}" class="rounded-circle border shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">`
+            : `<div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center fw-bold" style="width: 80px; height: 80px; font-size: 2rem;">${datosHijo.nombres.charAt(0)}</div>`;
+
+        const modalHtml = `
+        <div class="modal fade" id="modalFichaHijo" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                    <div class="modal-header bg-light border-bottom-0 pb-0">
+                        <div class="d-flex align-items-center w-100">
+                            <div class="me-3">${avatar}</div>
+                            <div class="flex-grow-1">
+                                <h4 class="fw-bold mb-0 text-dark">${datosHijo.nombres} ${datosHijo.apellidos}</h4>
+                                <span class="badge bg-primary mt-1">${datosHijo.grado} "${datosHijo.seccion}"</span>
+                                <span class="badge bg-secondary mt-1">DNI: ${datosHijo.dni}</span>
+                            </div>
+                            <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal"></button>
+                        </div>
+                    </div>
+                    <div class="modal-body px-4">
+                        <h5 class="text-primary border-bottom pb-2 mt-3"><i class="bi bi-calendar-week"></i> Horario de Clases</h5>
+                        ${tablaHorarioHtml}
+                    </div>
+                    <div class="modal-footer border-top-0">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        document.getElementById('modal-container').innerHTML = modalHtml;
+        const modal = new bootstrap.Modal(document.getElementById('modalFichaHijo'));
+        modal.show();
+
+    } catch (e) { alert("Error al cargar la ficha."); }
 }
 
 // ESTA LÍNEA ES LA QUE HACE QUE CARGUE AL DAR REFRESH (F5)
