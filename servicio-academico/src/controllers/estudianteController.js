@@ -2,11 +2,9 @@ const pool = require('../config/db');
 const axios = require('axios');
 require('dotenv').config();
 
-// 1. LISTAR ESTUDIANTES (Usando la VISTA SQL para traer Grado/Sección)
+// 1. LISTAR ESTUDIANTES
 const getEstudiantes = async (req, res) => {
     try {
-        // Consultamos la vista 'vista_estudiantes_info' que creamos en la base de datos
-        // Esto trae automáticamente: nombres, dni, Y TAMBIÉN el grado y sección actual.
         const [rows] = await pool.query('SELECT * FROM vista_estudiantes_info ORDER BY id DESC');
         res.json(rows);
     } catch (err) {
@@ -19,11 +17,10 @@ const getEstudiantes = async (req, res) => {
 const createEstudiante = async (req, res) => {
     const { dni, nombres, apellidos, fecha_nacimiento, direccion, tipo_sangre, alergias, apoderado_id } = req.body;
     
-    // Construcción de rutas para archivos
-    const port = process.env.PORT || 3001;
-    // req.files puede ser undefined si no se suben archivos, validamos eso
-    const fotoPath = (req.files && req.files['foto']) ? `http://localhost:${port}/uploads/${req.files['foto'][0].filename}` : null;
-    const docPath = (req.files && req.files['documento']) ? `http://localhost:${port}/uploads/${req.files['documento'][0].filename}` : null;
+    // --- CORRECCIÓN AQUÍ ---
+    // Ya no guardamos "http://localhost:3000...", guardamos solo la ruta relativa.
+    const fotoPath = (req.files && req.files['foto']) ? `uploads/${req.files['foto'][0].filename}` : null;
+    const docPath = (req.files && req.files['documento']) ? `uploads/${req.files['documento'][0].filename}` : null;
 
     if (!dni || !nombres || !apellidos) {
         return res.status(400).json({ error: 'Faltan campos obligatorios (DNI, Nombres, Apellidos)' });
@@ -52,18 +49,17 @@ const createEstudiante = async (req, res) => {
     }
 };
 
-// 3. ACTUALIZAR ESTUDIANTE (NUEVA FUNCIÓN)
+// 3. ACTUALIZAR ESTUDIANTE
 const updateEstudiante = async (req, res) => {
     const { id } = req.params;
-    // Solo permitimos editar Dirección y Alergias (Nombres/DNI protegidos)
     const { direccion, alergias } = req.body;
 
-    const port = process.env.PORT || 3001;
-    const fotoPath = (req.files && req.files['foto']) ? `http://localhost:${port}/uploads/${req.files['foto'][0].filename}` : null;
-    const docPath = (req.files && req.files['documento']) ? `http://localhost:${port}/uploads/${req.files['documento'][0].filename}` : null;
+    // --- CORRECCIÓN AQUÍ TAMBIÉN ---
+    // Guardamos rutas limpias, sin dominio
+    const fotoPath = (req.files && req.files['foto']) ? `uploads/${req.files['foto'][0].filename}` : null;
+    const docPath = (req.files && req.files['documento']) ? `uploads/${req.files['documento'][0].filename}` : null;
 
     try {
-        // Construimos la consulta dinámicamente según qué archivos se subieron
         let sql = 'UPDATE estudiantes SET direccion = ?, alergias = ?';
         let params = [direccion, alergias];
 
@@ -93,10 +89,7 @@ const updateEstudiante = async (req, res) => {
 const deleteEstudiante = async (req, res) => {
     const { id } = req.params;
     try {
-        // Primero borramos sus matrículas para evitar error de llave foránea
         await pool.query('DELETE FROM matriculas WHERE estudiante_id = ?', [id]);
-        
-        // Ahora borramos al estudiante
         const [result] = await pool.query('DELETE FROM estudiantes WHERE id = ?', [id]);
 
         if (result.affectedRows === 0) {
@@ -112,7 +105,7 @@ const deleteEstudiante = async (req, res) => {
 // 5. CONSULTA RENIEC
 const consultaReniec = async (req, res) => {
     const { dni } = req.params;
-    const token = 'sk_12112.TOi5FKlrsfSLG2yH7Zld1vtuurexb9D2'; // TU TOKEN
+    const token = 'sk_12112.TOi5FKlrsfSLG2yH7Zld1vtuurexb9D2'; 
 
     if (dni.length !== 8) return res.status(400).json({ error: 'El DNI debe tener 8 dígitos' });
 
@@ -139,7 +132,7 @@ const consultaReniec = async (req, res) => {
 module.exports = { 
     getEstudiantes, 
     createEstudiante, 
-    updateEstudiante, // <--- ¡Importante! Añadido aquí
+    updateEstudiante, 
     deleteEstudiante, 
     consultaReniec 
 };

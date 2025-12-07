@@ -1,7 +1,8 @@
 // frontend/app.js - VERSIÓN MAESTRA FINAL 2.0
 
 const API_AUTH = 'http://localhost:3000';
-const API_ACADEMIC = 'http://localhost:3001';
+const API_ACADEMIC = 'https://escuela-production-f2b4.up.railway.app';  
+const URL_SERVIDOR = 'https://escuela-production-f2b4.up.railway.app';
 let idUsuarioEditando = null;
 let idTrabajadorEditando = null;
 let alumnosSeccionActual = []; // Aquí guardaremos los datos para filtrarlos
@@ -738,13 +739,6 @@ async function eliminarApoderado(id) {
 }
 // =======================================================
 // =======================================================
-// 6. MÓDULO: GESTIÓN DE ESTUDIANTES (FINAL 5.0 - CON MODAL DE DETALLE)
-// =======================================================
-
-let idEstudianteEditando = null;
-let estudiantesCache = []; // AQUÍ GUARDAMOS LOS DATOS PARA NO RECARGAR AL ABRIR EL MODAL
-let misEstudiantesCache = []; // Guardamos los alumnos en memoria para el rol docente
-
 // 1. CARGAR TABLA
 async function cargarEstudiantes() {
     const token = localStorage.getItem('token');
@@ -789,7 +783,18 @@ async function cargarEstudiantes() {
                     <tbody>`;
         
         list.forEach(e => {
-            const foto = e.foto_perfil ? `<img src="${e.foto_perfil}" width="40" height="40" class="rounded-circle">` : '👤';
+            // --- AQUÍ ESTÁ EL CAMBIO CLAVE PARA LA FOTO ---
+            // Usamos URL_SERVIDOR para apuntar a la nube
+            let fotoHtml = '<span style="font-size: 24px;">👤</span>'; // Por defecto
+            
+            if (e.foto_perfil) {
+                // 1. Reemplazamos barras invertidas (\) por normales (/) por si se guardó desde Windows
+                const rutaLimpia = e.foto_perfil.replace(/\\/g, "/");
+                // 2. Concatenamos el dominio de Railway + la ruta de la imagen
+                fotoHtml = `<img src="${URL_SERVIDOR}/${rutaLimpia}" width="40" height="40" class="rounded-circle" style="object-fit: cover; border: 1px solid #ddd;">`;
+            }
+            // ---------------------------------------------
+
             const aulaInfo = e.grado_nombre ? `<span class="badge bg-info text-dark">${e.grado_nombre} "${e.seccion_letra}"</span>` : '<span class="badge bg-secondary">--</span>';
 
             // Botones limitados para docente (Solo ver)
@@ -800,12 +805,15 @@ async function cargarEstudiantes() {
                 acciones += ` <button class="btn btn-danger btn-sm" onclick="eliminarEstudiante(${e.id})"><i class="bi bi-trash"></i></button>`;
             }
 
-            html += `<tr><td>${foto}</td><td>${e.dni}</td><td>${e.apellidos}, ${e.nombres}</td><td>${aulaInfo}</td><td><small>${e.tipo_sangre||'--'}</small></td><td>${acciones}</td></tr>`;
+            html += `<tr><td>${fotoHtml}</td><td>${e.dni}</td><td>${e.apellidos}, ${e.nombres}</td><td>${aulaInfo}</td><td><small>${e.tipo_sangre||'--'}</small></td><td>${acciones}</td></tr>`;
         });
         
         area.innerHTML = html + '</tbody></table></div><div id="modal-detalle-container"></div>';
 
-    } catch (e) { area.innerHTML = 'Error cargando datos.'; }
+    } catch (e) { 
+        console.error(e);
+        area.innerHTML = '<div class="alert alert-danger">Error cargando datos. Revisa la consola.</div>'; 
+    }
 }
 // 2. FUNCIÓN PARA MOSTRAR EL MODAL CON DATOS
 // =======================================================
