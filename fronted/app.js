@@ -1,6 +1,6 @@
 // frontend/app.js - VERSIÓN MAESTRA FINAL 2.0
 
-const API_AUTH = 'http://localhost:3000';
+const API_AUTH = 'https://captivating-achievement-production.up.railway.app';
 const API_ACADEMIC = 'https://escuela-production-f2b4.up.railway.app';  
 const URL_SERVIDOR = 'https://escuela-production-f2b4.up.railway.app';
 let idUsuarioEditando = null;
