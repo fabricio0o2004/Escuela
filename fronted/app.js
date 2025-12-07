@@ -198,7 +198,7 @@ async function accionClick(titulo) {
 // =======================================================
 
 async function cargarUsuarios(area) {
-    area.innerHTML = '<p>Cargando usuarios...</p>';
+    area.innerHTML = '<p class="text-center mt-5"><span class="spinner-border text-primary"></span> Cargando usuarios...</p>';
     try {
         const res = await fetch(`${API_AUTH}/usuarios`); 
         const usuarios = await res.json();
@@ -206,23 +206,41 @@ async function cargarUsuarios(area) {
         let html = `
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3>Gestión de Usuarios</h3>
-                <button class="btn btn-primary" onclick="idUsuarioEditando=null; mostrarFormularioCrear()">+ Nuevo Usuario</button>
+                <button class="btn btn-primary shadow-sm" onclick="idUsuarioEditando=null; mostrarFormularioCrear()">
+                    <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
+                </button>
             </div>
-            <table class="table table-hover table-bordered shadow-sm bg-white">
-                <thead class="table-dark"><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead>
-                <tbody>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered shadow-sm bg-white align-middle">
+                    <thead class="table-dark">
+                        <tr><th>Nombre (ID)</th><th>Email</th><th>Rol</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody>
         `;
+        
         usuarios.forEach(u => {
+            // TRUCO: Tomamos el email, lo partimos en el '@' y agarramos la primera parte
+            let nombreVisual = u.email.split('@')[0];
+            
+            // (Opcional) Ponemos la primera letra en mayúscula para que se vea más elegante
+            nombreVisual = nombreVisual.charAt(0).toUpperCase() + nombreVisual.slice(1);
+
             html += `<tr>
-                <td>${u.nombre_completo}</td><td>${u.email}</td><td><span class="badge bg-secondary">${u.rol}</span></td>
+                <td class="fw-bold text-primary">${nombreVisual}</td>
+                <td>${u.email}</td>
+                <td><span class="badge bg-secondary">${u.rol}</span></td>
                 <td>
-                    <button class="btn btn-warning btn-sm" onclick="cargarDatosEdicion(${u.id}, '${u.nombre_completo}', '${u.email}', '${u.rol}')">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${u.id})">Eliminar</button>
+                    <button class="btn btn-warning btn-sm" onclick="cargarDatosEdicion(${u.id}, '${nombreVisual}', '${u.email}', '${u.rol}')"><i class="bi bi-pencil-square"></i> Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${u.id})"><i class="bi bi-trash"></i></button>
                 </td>
             </tr>`;
         });
-        area.innerHTML = html + '</tbody></table>';
-    } catch (e) { area.innerHTML = '<div class="alert alert-danger">Error cargando usuarios</div>'; }
+        
+        area.innerHTML = html + '</tbody></table></div>';
+    } catch (e) { 
+        console.error(e);
+        area.innerHTML = '<div class="alert alert-danger">Error cargando usuarios. Verifica la conexión.</div>'; 
+    }
 }
 
 async function mostrarFormularioCrear() {
