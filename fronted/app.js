@@ -840,22 +840,17 @@ async function verModalEstudiante(id) {
 
     // 1. Intentamos buscar en memoria primero
     if (typeof estudiantesCache !== 'undefined' && estudiantesCache.length > 0) {
-        // Convertimos a String para asegurar que coincida (5 vs "5")
         alumno = estudiantesCache.find(e => String(e.id) === String(id));
     }
 
-    // 2. Si NO está en memoria, lo pedimos al servidor (Plan B)
+    // 2. Si NO está en memoria, lo pedimos al servidor
     if (!alumno) {
         try {
             const res = await fetch(`${API_ACADEMIC}/estudiantes`, { 
                 headers: { 'Authorization': `Bearer ${token}` } 
             });
             const lista = await res.json();
-            
-            // Actualizamos la caché ya que estamos aquí
             estudiantesCache = lista;
-            
-            // Buscamos de nuevo
             alumno = lista.find(e => String(e.id) === String(id));
         } catch (e) {
             console.error(e);
@@ -863,7 +858,6 @@ async function verModalEstudiante(id) {
         }
     }
 
-    // Si después de todo sigue sin aparecer...
     if (!alumno) return alert("Estudiante no encontrado en la base de datos.");
 
     // 3. Preparar Datos Visuales
@@ -879,10 +873,24 @@ async function verModalEstudiante(id) {
         edad = `(${e} años)`;
     }
 
-    // Avatar
-    const avatar = (alumno.foto_perfil && alumno.foto_perfil !== "null")
-        ? `<img src="${alumno.foto_perfil}" class="rounded-circle shadow border border-3 border-white" style="width: 120px; height: 120px; object-fit: cover; margin-top: -60px;">`
+    // --- CORRECCIÓN DE FOTO (Avatar) ---
+    let avatarUrl = "";
+    if (alumno.foto_perfil && alumno.foto_perfil !== "null") {
+        // Limpiamos barras invertidas (\) y espacios
+        const rutaLimpia = alumno.foto_perfil.replace(/\\/g, "/").trim();
+        
+        // Si la ruta ya tiene http (legacy), la usamos tal cual. Si no, le pegamos el servidor.
+        if (rutaLimpia.startsWith("http")) {
+            avatarUrl = rutaLimpia;
+        } else {
+            avatarUrl = `${URL_SERVIDOR}/${rutaLimpia}`;
+        }
+    }
+
+    const avatar = avatarUrl
+        ? `<img src="${avatarUrl}" class="rounded-circle shadow border border-3 border-white" style="width: 120px; height: 120px; object-fit: cover; margin-top: -60px;">`
         : `<div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow border border-3 border-white" style="width: 120px; height: 120px; font-size: 3rem; margin: 0 auto; margin-top: -60px;">${alumno.nombres.charAt(0)}</div>`;
+    // -----------------------------------
 
     // Estado Matrícula
     const estadoAula = alumno.grado_nombre 
@@ -898,6 +906,14 @@ async function verModalEstudiante(id) {
            </div>`
         : `<div class="alert alert-warning py-1 small mb-0">Sin apoderado asignado</div>`;
 
+
+    // --- CORRECCIÓN DE DOCUMENTO PDF ---
+    let docUrl = "#";
+    if (alumno.documento_pdf && alumno.documento_pdf !== "null") {
+         const rutaDoc = alumno.documento_pdf.replace(/\\/g, "/").trim();
+         docUrl = rutaDoc.startsWith("http") ? rutaDoc : `${URL_SERVIDOR}/${rutaDoc}`;
+    }
+    // -----------------------------------
 
     // 4. HTML DEL MODAL
     const modalHtml = `
@@ -937,7 +953,7 @@ async function verModalEstudiante(id) {
 
                     ${(alumno.documento_pdf && alumno.documento_pdf !== "null") ? `
                     <div class="d-grid mt-3">
-                        <a href="${alumno.documento_pdf}" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill">
+                        <a href="${docUrl}" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill">
                             <i class="bi bi-file-earmark-pdf-fill"></i> Ver Documento Adjunto
                         </a>
                     </div>` : ''}
@@ -2676,13 +2692,19 @@ async function cargarMisHijos() {
         }
 
         misHijosCache.forEach(h => {
-            // Avatar
+            // --- CORRECCIÓN DE FOTO AQUÍ ---
             let avatarHtml;
             if (h.foto_perfil && h.foto_perfil !== "null") {
-                avatarHtml = `<img src="${h.foto_perfil}" class="rounded-circle border border-4 border-white shadow" style="width: 100px; height: 100px; object-fit: cover; margin-top: -50px;">`;
+                // 1. Limpiamos la ruta
+                const rutaLimpia = h.foto_perfil.replace(/\\/g, "/").trim();
+                // 2. Le pegamos el servidor de Railway
+                const urlFoto = rutaLimpia.startsWith('http') ? rutaLimpia : `${URL_SERVIDOR}/${rutaLimpia}`;
+                
+                avatarHtml = `<img src="${urlFoto}" class="rounded-circle border border-4 border-white shadow" style="width: 100px; height: 100px; object-fit: cover; margin-top: -50px;">`;
             } else {
                 avatarHtml = `<div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center fw-bold shadow border border-4 border-white" style="width: 100px; height: 100px; font-size: 2.5rem; margin: 0 auto; margin-top: -50px;">${h.nombres.charAt(0)}</div>`;
             }
+            // -------------------------------
 
             const estadoMatricula = h.grado 
                 ? `<span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1 rounded-pill">Matriculado: ${h.grado} "${h.seccion}"</span>`
@@ -2760,10 +2782,17 @@ async function verFichaCompletaHijo(idEstudiante) {
         });
         tablaHorarioHtml += `</tbody></table></div>`;
 
-        // Modal
-        const avatar = datosHijo.foto_perfil 
-            ? `<img src="${datosHijo.foto_perfil}" class="rounded-circle border shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">`
-            : `<div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center fw-bold" style="width: 80px; height: 80px; font-size: 2rem;">${datosHijo.nombres.charAt(0)}</div>`;
+        // --- CORRECCIÓN DE AVATAR (FOTO) ---
+        let avatarHtml;
+        if (datosHijo.foto_perfil && datosHijo.foto_perfil !== "null") {
+            const rutaLimpia = datosHijo.foto_perfil.replace(/\\/g, "/").trim();
+            const urlFoto = rutaLimpia.startsWith('http') ? rutaLimpia : `${URL_SERVIDOR}/${rutaLimpia}`;
+            
+            avatarHtml = `<img src="${urlFoto}" class="rounded-circle border shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">`;
+        } else {
+            avatarHtml = `<div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center fw-bold" style="width: 80px; height: 80px; font-size: 2rem;">${datosHijo.nombres.charAt(0)}</div>`;
+        }
+        // -----------------------------------
 
         const modalHtml = `
         <div class="modal fade" id="modalFichaHijo" tabindex="-1">
@@ -2771,7 +2800,7 @@ async function verFichaCompletaHijo(idEstudiante) {
                 <div class="modal-content border-0 shadow-lg rounded-4">
                     <div class="modal-header bg-light border-bottom-0 pb-0">
                         <div class="d-flex align-items-center w-100">
-                            <div class="me-3">${avatar}</div>
+                            <div class="me-3">${avatarHtml}</div>
                             <div class="flex-grow-1">
                                 <h4 class="fw-bold mb-0 text-dark">${datosHijo.nombres} ${datosHijo.apellidos}</h4>
                                 <span class="badge bg-primary mt-1">${datosHijo.grado} "${datosHijo.seccion}"</span>
@@ -2795,9 +2824,11 @@ async function verFichaCompletaHijo(idEstudiante) {
         const modal = new bootstrap.Modal(document.getElementById('modalFichaHijo'));
         modal.show();
 
-    } catch (e) { alert("Error al cargar la ficha."); }
+    } catch (e) { 
+        console.error(e);
+        alert("Error al cargar la ficha."); 
+    }
 }
-
 // ESTA LÍNEA ES LA QUE HACE QUE CARGUE AL DAR REFRESH (F5)
 if (localStorage.getItem('token')) {
     mostrarDashboard();
